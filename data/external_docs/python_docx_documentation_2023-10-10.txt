@@ -1,0 +1,913 @@
+python-docx allows you to create new documents as well as make changes to existing
+ones. Actually, it only lets you make changes to existing documents; it's just
+that if you start with a document that doesn't have any content, it might feel
+at first like you're creating one from scratch. This characteristic is a powerful one. A lot of how a document looks is
+determined by the parts that are left when you delete all the content. Things
+like styles and page headers and footers are contained separately from the main
+content, allowing you to place a good deal of customization in your starting
+document that then appears in the document you produce. Let's walk through the steps to create a document one example at a time,
+starting with two of the main things you can do with a document, open it and
+save it. The simplest way to get started is to open a new document without specifying
+a file to open: This creates a new document from the built-in default template and saves it
+unchanged to a file named 'test.docx'. The so-called 'default template' is
+actually just a Word file having no content, stored with the installed python-docx
+package. It's roughly the same as you get by picking the Word Document
+template after selecting Word's File > New from Template' menu item. If you want more control over the final document, or if you want to change an
+existing document, you need to open one with a filename: Things to note: python-docx can open a document from a so-called file-like object. It can also
+save to a file-like object. This can be handy when you want to get the source
+or target document over a network connection or from a database and don't want
+to (or aren't allowed to) interact with the file system. In practice this means
+you can pass an open file or StringIO/BytesIO stream object to open or save
+a document like so: The 'rb' file open mode parameter isn't required on all operating
+systems. It defaults to 'r' which is enough sometimes, but the 'b'
+(selecting binary mode) is required on Windows and at least some versions of
+Linux to allow Zipfile to open the file. Okay, so you've got a document open and are pretty sure you can save it
+somewhere later. Next step is to get some content in there ' Quickstart Working with TextTo work effectively with text, it's important to first understand a little
+about block-level elements like paragraphs and inline-level objects like
+runs. The paragraph is the primary block-level object in Word. A block-level item flows the text it contains between its left and right
+edges, adding an additional line each time the text extends beyond its right
+boundary. For a paragraph, the boundaries are generally the page margins, but
+they can also be column boundaries if the page is laid out in columns, or
+cell boundaries if the paragraph occurs inside a table cell. A table is also a block-level object. An inline object is a portion of the content that occurs inside a block-level
+item. An example would be a word that appears in bold or a sentence in
+all-caps. The most common inline object is a run. All content within
+a block container is inside of an inline object. Typically, a paragraph
+contains one or more runs, each of which contain some part of the paragraph's
+text. The attributes of a block-level item specify its placement on the page, such
+items as indentation and space before and after a paragraph. The attributes
+of an inline item generally specify the font in which the content appears,
+things like typeface, font size, bold, and italic. A paragraph has a variety of properties that specify its placement within its
+container (typically a page) and the way it divides its content into separate
+lines. In general, it's best to define a paragraph style collecting these
+attributes into a meaningful group and apply the appropriate style to each
+paragraph, rather than repeatedly apply those properties directly to each
+paragraph. This is analogous to how Cascading Style Sheets (CSS) work with
+HTML. All the paragraph properties described here can be set using a style as
+well as applied directly to a paragraph. The formatting properties of a paragraph are accessed using the
+ParagraphFormat object available using the paragraph's
+paragraph_format property. Also known as justification, the horizontal alignment of a paragraph can be
+set to left, centered, right, or fully justified (aligned on both the left
+and right sides) using values from the enumeration
+WD_PARAGRAPH_ALIGNMENT: Indentation is the horizontal space between a paragraph and edge of its
+container, typically the page margin. A paragraph can be indented separately
+on the left and right side. The first line can also have a different
+indentation than the rest of the paragraph. A first line indented further
+than the rest of the paragraph has first line indent. A first line indented
+less has a hanging indent. Indentation is specified using a Length value, such as Inches, Pt, or
+Cm. Negative values are valid and cause the paragraph to overlap the margin
+by the specified amount. A value of None indicates the indentation value is
+inherited from the style hierarchy. Assigning None to an indentation
+property removes any directly-applied indentation setting and restores
+inheritance from the style hierarchy: Right-side indent works in a similar way: First-line indent is specified using the
+first_line_indent property and is interpreted
+relative to the left indent. A negative value indicates a hanging indent: A tab stop determines the rendering of a tab character in the text of
+a paragraph. In particular, it specifies the position where the text
+following the tab character will start, how it will be aligned to that
+position, and an optional leader character that will fill the horizontal
+space spanned by the tab. The tab stops for a paragraph or style are contained in a TabStops object
+accessed using the tab_stops property on
+ParagraphFormat: A new tab stop is added using the add_tab_stop() method: Alignment defaults to left, but may be specified by providing a member of the
+WD_TAB_ALIGNMENT enumeration. The leader character defaults to spaces,
+but may be specified by providing a member of the WD_TAB_LEADER
+enumeration: Existing tab stops are accessed using sequence semantics on TabStops: More details are available in the TabStops and TabStop API documentation The space_before and
+space_after properties control the spacing between
+subsequent paragraphs, controlling the spacing before and after a paragraph,
+respectively. Inter-paragraph spacing is collapsed during page layout,
+meaning the spacing between two paragraphs is the maximum of the
+space_after for the first paragraph and the space_before of the second
+paragraph. Paragraph spacing is specified as a Length value, often using
+Pt: Line spacing is the distance between subsequent baselines in the lines of
+a paragraph. Line spacing can be specified either as an absolute distance or
+relative to the line height (essentially the point size of the font used).
+A typical absolute measure would be 18 points. A typical relative measure
+would be double-spaced (2.0 line heights). The default line spacing is
+single-spaced (1.0 line heights). Line spacing is controlled by the interaction of the
+line_spacing and
+line_spacing_rule properties.
+line_spacing is either a Length value,
+a (small-ish) float, or None. A Length value indicates an absolute
+distance. A float indicates a number of line heights. None indicates line
+spacing is inherited. line_spacing_rule is a member
+of the WD_LINE_SPACING enumeration or None: Four paragraph properties, keep_together,
+keep_with_next,
+page_break_before, and
+widow_control control aspects of how the paragraph
+behaves near page boundaries. keep_together causes the entire paragraph to appear
+on the same page, issuing a page break before the paragraph if it would
+otherwise be broken across two pages. keep_with_next keeps a paragraph on the same page
+as the subsequent paragraph. This can be used, for example, to keep a section
+heading on the same page as the first paragraph of the section. page_break_before causes a paragraph to be placed
+at the top of a new page. This could be used on a chapter heading to ensure
+chapters start on a new page. widow_control breaks a page to avoid placing the
+first or last line of the paragraph on a separate page from the rest of the
+paragraph. All four of these properties are tri-state, meaning they can take the value
+True, False, or None. None indicates the property value is inherited
+from the style hierarchy. True means 'on' and False means 'off': Character formatting is applied at the Run level. Examples include font
+typeface and size, bold, italic, and underline. A Run object has a read-only font property providing access
+to a Font object. A run's Font object provides properties for getting
+and setting the character formatting for that run. Several examples are provided here. For a complete set of the available
+properties, see the Font API documentation. The font for a run can be accessed like this: Typeface and size are set like this: Many font properties are tri-state, meaning they can take the values
+True, False, and None. True means the property is 'on', False means
+it is 'off'. Conceptually, the None value means 'inherit'. A run exists in
+the style inheritance hierarchy and by default inherits its character
+formatting from that hierarchy. Any character formatting directly applied
+using the Font object overrides the inherited values. Bold and italic are tri-state properties, as are all-caps, strikethrough,
+superscript, and many others. See the Font API documentation for a full
+list: Underline is a bit of a special case. It is a hybrid of a tri-state property
+and an enumerated value property. True means single underline, by far the
+most common. False means no underline, but more often None is the right
+choice if no underlining is wanted. The other forms of underlining, such as
+double or dashed, are specified with a member of the WD_UNDERLINE
+enumeration: Each Font object has a ColorFormat object that provides access to its
+color, accessed via its read-only color property. Apply a specific RGB color to a font: A font can also be set to a theme color by assigning a member of the
+MSO_THEME_COLOR_INDEX enumeration: A font's color can be restored to its default (inherited) value by assigning
+None to either the rgb or
+theme_color attribute of ColorFormat: Determining the color of a font begins with determining its color type: The value of the type property can be a member of the
+MSO_COLOR_TYPE enumeration or None. MSO_COLOR_TYPE.RGB indicates it is
+an RGB color. MSO_COLOR_TYPE.THEME indicates a theme color.
+MSO_COLOR_TYPE.AUTO indicates its value is determined automatically by the
+application, usually set to black. (This value is relatively rare.) None
+indicates no color is applied and the color is inherited from the style
+hierarchy; this is the most common case. When the color type is MSO_COLOR_TYPE.RGB, the rgb
+property will be an RGBColor value indicating the RGB color: When the color type is MSO_COLOR_TYPE.THEME, the
+theme_color property will be a member of
+MSO_THEME_COLOR_INDEX indicating the theme color: Working with Documents Working with SectionsWord supports the notion of a section, a division of a document having the same page
+layout settings, such as margins and page orientation. This is how, for example, a
+document can contain some pages in portrait layout and others in landscape. Each section
+also defines the headers and footers that apply to the pages of that section. Most Word documents have only the single section that comes by default and further, most
+of those have no reason to change the default margins or other page layout. But when you
+do need to change the page layout, you'll need to understand sections to get it done. Access to document sections is provided by the sections property on the
+Document object: It's theoretically possible for a document not to have any explicit sections,
+although I've yet to see this occur in the wild. If you're accessing an
+unpredictable population of .docx files you may want to provide for that
+possibility using a len() check or try block to avoid an uncaught
+IndexError exception stopping your program. The Document.add_section() method allows a new section to be started at
+the end of the document. Paragraphs and tables added after calling this method
+will appear in the new section: The Section object has eleven properties that allow page layout settings to
+be discovered and specified. Section.start_type describes the type of break that precedes the
+section: Values of start_type are members of the WD_SECTION_START enumeration. Three properties on Section describe page dimensions and orientation.
+Together these can be used, for example, to change the orientation of a section
+from portrait to landscape: Seven properties on Section together specify the various edge spacings that
+determine where text appears on the page: Working with Text Working with Headers and FootersWord supports page headers and page footers. A page header is text that appears in
+the top margin area of each page, separated from the main body of text, and usually
+conveying context information, such as the document title, author, creation date, or the
+page number. The page headers in a document are the same from page to page, with only
+small differences in content, such as a changing section title or page number. A page
+header is also known as a running head. A page footer is analogous in every way to a page header except that it appears at the
+bottom of a page. It should not be confused with a footnote, which is not uniform
+between pages. For brevity's sake, the term header is often used here to refer to what
+may be either a header or footer object, trusting the reader to understand its
+applicability to both object types. Headers and footers are linked to a section; this allows each section to have
+a distinct header and/or footer. For example, a landscape section might have a wider
+header than a portrait section. Each section object has a .header property providing access to a _Header object
+for that section: A _Header object is always present on Section.header, even when no header is
+defined for that section. The presence of an actual header definition is indicated by
+_Header.is_linked_to_previous: A value of True indicates the _Header object contains no header definition and the
+section will display the same header as the previous section. This 'inheritance'
+behavior is recursive, such that a 'linked' header actually gets its definition from the
+first prior section having a header definition. This 'linked' state is indicated as
+'Same as previous' in the Word UI. A new document does not have a header (on the single section it contains) and so
+.is_linked_to_previous is True in that case. Note this case may be a bit
+counterintuitive in that there is no previous section header to link to. In
+this 'no previous header' case, no header is displayed. A header can be added to a new document simply by editing the content of the _Header
+object. A _Header object is a 'story' container and its content is edited just like
+a Document object. Note that like a new document, a new header already contains
+a single (empty) paragraph: Note also that the act of adding content (or even just accessing header.paragraphs)
+added a header definition and changed the state of .is_linked_to_previous: A header with multiple 'zones' is often accomplished using carefully placed tab stops. The required tab-stops for a center and right-aligned 'zone' are part of the Header
+and Footer styles in Word. If you're using a custom template rather than the
+python-docx default, it probably makes sense to define that style in your template. Inserted tab characters ("\t") are used to separate left, center, and right-aligned
+header content: The Header style is automatically applied to a new header, so the third line just
+above (applying the Header style) is unnecessary in this case, but included here to
+illustrate the general case. An unwanted header can be removed by assigning True to its
+.is_linked_to_previous attribute: The content for a header is irreversably deleted when True is assigned to
+.is_linked_to_previous. The 'just start editing' approach works fine for the simple case, but to make sense of
+header behaviors in a multi-section document, a few simple concepts will be helpful.
+Here they are in a nutshell: An explicit header definition can be given to a section that lacks one by assigning
+False to its .is_linked_to_previous property: The newly added header definition contains a single empty paragraph. Note that leaving
+the header this way is occasionally useful as it effectively 'turns-off' a header for
+that section and those after it until the next section with a defined header. Assigning False to .is_linked_to_previous on a header that already has a header
+definition does nothing. Editing the content of a header edits the content of the source header, taking into
+account any 'inheritance'. So for example, if the section 2 header inherits from section
+1 and you edit the section 2 header, you actually change the contents of the section
+1 header. A new header definition is not added for section 2 unless you first explicitly
+assign False to its .is_linked_to_previous property. Working with Sections API basicsDocuments communicate better when like elements are formatted consistently. To
+achieve that consistency, professional document designers develop a style
+sheet which defines the document element types and specifies how each should
+be formatted. For example, perhaps body paragraphs are to be set in 9 pt Times
+Roman with a line height of 11 pt, justified flush left, ragged right. When
+these specifications are applied to each of the elements of the document,
+a consistent and polished look is achieved. A style in Word is such a set of specifications that may be applied, all at
+once, to a document element. Word has paragraph styles, character styles, table
+styles, and numbering definitions. These are applied to a paragraph, a span of
+text, a table, and a list, respectively. Experienced programmers will recognize styles as a level of indirection. The
+great thing about those is it allows you to define something once, then apply
+that definition many times. This saves the work of defining the same thing
+over an over; but more importantly it allows you to change the definition and
+have that change reflected in all the places you have applied it. This is likely to show up quite a bit until I can add some fancier features to
+work around it, so here it is up top. All this adds up to the following: If you want to use a style in a document you
+create with python-docx, the document you start with must contain the style
+definition. Otherwise it just won't work. It won't raise an exception, it just
+won't work. If you use the 'default' template document, it contains the styles listed
+below, most of the ones you're likely to want if you're not designing your own.
+If you're using your own starting document, you need to use each of the styles
+you want at least once in it. You don't have to keep the content, but you need
+to apply the style to something at least once before saving the document.
+Creating a one-word paragraph, applying five styles to it in succession and
+then deleting the paragraph works fine. That's how I got the ones below into
+the default template :). A style has three identifying properties, name, style_id, and type. Each style's name property is its stable, unique identifier for
+access purposes. A style's style_id is used internally to key a content object such as
+a paragraph to its style. However this value is generated automatically by
+Word and is not guaranteed to be stable across saves. In general, the style
+id is formed simply by removing spaces from the localized style name,
+however there are exceptions. Users of python-docx should generally avoid using
+the style id unless they are confident with the internals involved. A style's type is set at creation time and cannot be changed. Word comes with almost 300 so-called built-in styles like Normal,
+Heading 1, and List Bullet. Style definitions are stored in the
+styles.xml part of a .docx package, but built-in style definitions are
+stored in the Word application itself and are not written to styles.xml
+until they are actually used. This is a sensible strategy because they take
+up considerable room and would be largely redundant and useless overhead in
+every .docx file otherwise. The fact that built-in styles are not written to the .docx package until used
+gives rise to the need for latent style definitions, explained below. In addition to collecting a set of formatting properties, a style has five
+properties that specify its behavior. This behavior is relatively simple,
+basically amounting to when and where the style appears in the Word or
+LibreOffice UI. The key notion to understanding style behavior is the recommended list. In
+the style pane in Word, the user can select which list of styles they want to
+see. One of these is named Recommended and is known as the recommended
+list. All five behavior properties affect some aspect of the style's
+appearance in this list and in the style gallery. In brief, a style appears in the recommended list if its hidden
+property is False (the default). If a style is not hidden and its
+quick_style property is True, it also appears in the style gallery.
+If a hidden style's unhide_when_used property is True, its hidden
+property is set False the first time it is used. Styles in the style lists
+and style gallery are sorted in priority order, then alphabetically
+for styles of the same priority. If a style's locked property is
+True and formatting restrictions are turned on for the document, the style
+will not appear in any list or the style gallery and cannot be applied to
+content. The need to specify the UI behavior of built-in styles not defined in
+styles.xml gives rise to the need for latent style definitions. A latent
+style definition is basically a stub style definition that has at most the
+five behavior attributes in addition to the style name. Additional space is
+saved by defining defaults for each of the behavior attributes, so only those
+that differ from the default need be defined and styles that match all
+defaults need no latent style definition. Latent style definitions are specified using the w:latentStyles and
+w:lsdException elements appearing in styles.xml. A latent style definition is only required for a built-in style because only
+a built-in style can appear in the UI without a style definition in
+styles.xml. A style can inherit properties from another style, somewhat similarly to how
+Cascading Style Sheets (CSS) works. Inheritance is specified using the
+base_style attribute. By basing one style on another, an
+inheritance hierarchy of arbitrary depth can be formed. A style having no
+base style inherits properties from the document defaults. API basics Working with StylesThis page uses concepts developed in the prior page without introduction. If
+a term is unfamiliar, consult the prior page Understanding Styles for
+a definition. Styles are accessed using the Document.styles attribute: The Styles object provides dictionary-style access to defined styles by
+name: Note Built-in styles are stored in a WordprocessingML file using their
+English name, e.g. 'Heading 1', even though users working on a localized
+version of Word will see native language names in the UI, e.g. 'Kop 1'.
+Because python-docx operates on the WordprocessingML file, style lookups must
+use the English name. A document available on this external site allows
+you to create a mapping between local language names and English style
+names:
+http://www.thedoctools.com/index.php?show=mt_create_style_name_list User-defined styles, also known as custom styles, are not localized and
+are accessed with the name exactly as it appears in the Word UI. The Styles object is also iterable. By using the identification properties
+on BaseStyle, various subsets of the defined styles can be generated. For
+example, this code will produce a list of the defined paragraph styles: The Paragraph, Run, and Table objects each have a style
+attribute. Assigning a style object to this attribute applies that style: A style name can also be assigned directly, in which case python-docx will do the
+lookup for you: A style can also be applied at creation time using either the style object or
+its name: A new style can be added to the document by specifying a unique name and
+a style type: Use the base_style property to specify a style the new
+style should inherit formatting settings from: A style can be removed from the document simply by calling its
+delete() method: Note The Style.delete() method removes the style's definition
+from the document. It does not affect content in the document to which
+that style is applied. Content having a style not defined in the document
+is rendered using the default style for that content object, e.g.
+'Normal' in the case of a paragraph. Character, paragraph, and table styles can all specify character formatting
+to be applied to content with that style. All the character formatting that
+can be applied directly to text can be specified in a style. Examples include
+font typeface and size, bold, italic, and underline. Each of these three style types have a font
+attribute providing access to a Font object. A style's Font object
+provides properties for getting and setting the character formatting for that
+style. Several examples are provided here. For a complete set of the available
+properties, see the Font API documentation. The font for a style can be accessed like this: Typeface and size are set like this: Many font properties are tri-state, meaning they can take the values
+True, False, and None. True means the property is 'on', False means
+it is 'off'. Conceptually, the None value means 'inherit'. Because a style
+exists in an inheritance hierarchy, it is important to have the ability to
+specify a property at the right place in the hierarchy, generally as far up
+the hierarchy as possible. For example, if all headings should be in the
+Arial typeface, it makes more sense to set that property on the Heading 1
+style and have Heading 2 inherit from Heading 1. Bold and italic are tri-state properties, as are all-caps, strikethrough,
+superscript, and many others. See the Font API documentation for a full
+list: Underline is a bit of a special case. It is a hybrid of a tri-state property
+and an enumerated value property. True means single underline, by far the
+most common. False means no underline, but more often None is the right
+choice if no underlining is wanted since it is rare to inherit it from a base
+style. The other forms of underlining, such as double or dashed, are
+specified with a member of the WD_UNDERLINE enumeration: Both a paragraph style and a table style allow paragraph formatting to be
+specified. These styles provide access to a ParagraphFormat object via
+their paragraph_format property. Paragraph formatting includes layout behaviors such as justification,
+indentation, space before and after, page break before, and widow/orphan
+control. For a complete list of the available properties, consult the API
+documentation page for the ParagraphFormat object. Here's an example of how you would create a paragraph style having hanging
+indentation of 1/4 inch, 12 points spacing above, and widow/orphan control: A paragraph style has a next_paragraph_style
+property that specifies the style to be applied to new paragraphs inserted
+after a paragraph of that style. This is most useful when the style would
+normally appear only once in a sequence, such as a heading. In that case, the
+paragraph style can automatically be set back to a body style after
+completing the heading. In the most common case (body paragraphs), subsequent paragraphs should
+receive the same style as the current paragraph. The default handles this
+case well by applying the same style if a next paragraph style is not
+specified. Here's an example of how you would change the next paragraph style of the
+Heading 1 style to Body Text: The default behavior can be restored by assigning None or the style itself: The properties of a style fall into two categories, behavioral properties
+and formatting properties. Its behavioral properties control when and where
+the style appears in the Word UI. Its formatting properties determine the
+formatting of content to which the style is applied, such as the size of the
+font and its paragraph indentation. There are five behavioral properties of a style: See the Style Behavior section in Understanding Styles for
+a description of how these behavioral properties interact to determine when
+and where a style appears in the Word UI. The priority property takes an integer value. The other four style
+behavior properties are tri-state, meaning they can take the value True
+(on), False (off), or None (inherit). The following code will cause the 'Body Text' paragraph style to appear first
+in the style gallery: This code will remove the 'Normal' paragraph style from the style gallery,
+but allow it to remain in the recommended list: See the Built-in styles and Latent styles sections in
+Understanding Styles for a description of how latent styles define the
+behavioral properties of built-in styles that are not yet defined in the
+styles.xml part of a .docx file. The latent styles in a document are accessed from the styles object: A LatentStyles object supports len(), iteration, and dictionary-style
+access by style name: The LatentStyles object also provides access to the default behavioral
+properties for built-in styles in the current document. These defaults
+provide the value for any undefined attributes of the _LatentStyle
+definitions and to all behavioral properties of built-in styles having no
+explicit latent style definition. See the API documentation for the
+LatentStyles object for the complete set of available properties: A new latent style can be added using the
+add_latent_style() method on LatentStyles. This code
+adds a new latent style for the builtin style 'List Bullet', setting it to
+appear in the style gallery: A latent style definition can be deleted by calling its
+delete() method: Understanding Styles Understanding pictures and other shapesConceptually, Word documents have two layers, a text layer and a drawing
+layer. In the text layer, text objects are flowed from left to right and from
+top to bottom, starting a new page when the prior one is filled. In the drawing
+layer, drawing objects, called shapes, are placed at arbitrary positions.
+These are sometimes referred to as floating shapes. A picture is a shape that can appear in either the text or drawing layer. When
+it appears in the text layer it is called an inline shape, or more
+specifically, an inline picture. Inline shapes are treated like a big text character (a character glyph). The
+line height is increased to accomodate the shape and the shape is wrapped to
+a line it will fit on width-wise, just like text. Inserting text in front of it
+will cause it to move to the right. Often, a picture is placed in a paragraph
+by itself, but this is not required. It can have text before and after it in
+the paragraph in which it's placed. At the time of writing, python-docx only supports inline pictures. Floating pictures
+can be added. If you have an active use case, submit a feature request on the
+issue tracker. The Document.add_picture() method adds a specified picture
+to the end of the document in a paragraph of its own. However, by digging
+a little deeper into the API you can place text on either side of the picture
+in its paragraph, or both. Working with Styles Document objectsThe main Document and related objects. Return a Document object loaded from docx, where docx can be either a path
+to a .docx file (a string) or a file-like object. If docx is missing or None, the built-in default document 'template' is
+loaded. WordprocessingML (WML) document. Not intended to be constructed directly. Use docx.Document() to open or create
+a document. Return a heading paragraph newly added to the end of the document. The heading paragraph will contain text and have its paragraph style
+determined by level. If level is 0, the style is set to Title. If level
+is 1 (or omitted), Heading 1 is used. Otherwise the style is set to Heading
+{level}. Raises ValueError if level is outside the range 0-9. Return newly Paragraph object containing only a page break. Return paragraph newly added to the end of the document. The paragraph is populated with text and having paragraph style style. text can contain tab (\t) characters, which are converted to the
+appropriate XML form for a tab. text can also include newline (\n) or
+carriage return (\r) characters, each of which is converted to a line
+break. Return new picture shape added in its own paragraph at end of the document. The picture contains the image at image_path_or_stream, scaled based on
+width and height. If neither width nor height is specified, the picture
+appears at its native size. If only one is specified, it is used to compute a
+scaling factor that is then applied to the unspecified dimension, preserving the
+aspect ratio of the image. The native size of the picture is calculated using
+the dots-per-inch (dpi) value specified in the image file, defaulting to 72 dpi
+if no value is specified, as is often the case. Return a Section object newly added at the end of the document. The optional start_type argument must be a member of the WD_SECTION_START
+enumeration, and defaults to WD_SECTION.NEW_PAGE if not provided. Add a table having row and column counts of rows and cols respectively. style may be a table style object or a table style name. If style is None,
+the table inherits the default table style of the document. A CoreProperties object providing Dublin Core properties of document. The InlineShapes collectoin for this document. An inline shape is a graphical object, such as a picture, contained in a run of
+text and behaving like a character glyph, being flowed like other text in a
+paragraph. The Paragraph instances in the document, in document order. Note that paragraphs within revision marks such as <w:ins> or <w:del> do
+not appear in this list. The DocumentPart object of this document. Save this document to path_or_stream. path_or_stream can be either a path to a filesystem location (a string) or a
+file-like object. Sections object providing access to each section in this document. A Settings object providing access to the document-level settings. A Styles object providing access to the styles in this document. All Table instances in the document, in document order. Note that only tables appearing at the top level of the document appear in this
+list; a table nested inside a table cell does not appear. A table within
+revision marks such as <w:ins> or <w:del> will also not appear in the
+list. Each Document object provides access to its CoreProperties object via its
+core_properties attribute. A CoreProperties object provides
+read/write access to the so-called core properties for the document. The
+core properties are author, category, comments, content_status, created,
+identifier, keywords, language, last_modified_by, last_printed, modified,
+revision, subject, title, and version. Each property is one of three types, str, datetime.datetime, or int. String
+properties are limited in length to 255 characters and return an empty string
+('') if not set. Date properties are assigned and returned as datetime.datetime
+objects without timezone, i.e. in UTC. Any timezone conversions are the
+responsibility of the client. Date properties return None if not set. python-docx does not automatically set any of the document core properties other
+than to add a core properties part to a presentation that doesn't have one
+(very uncommon). If python-docx adds a core properties part, it contains default
+values for the title, last_modified_by, revision, and modified properties.
+Client code should update properties like revision and last_modified_by
+if that behavior is desired. string ' An entity primarily responsible for making the content of the
+resource. string ' A categorization of the content of this package. Example
+values might include: Resume, Letter, Financial Forecast, Proposal,
+or Technical Presentation. string ' An account of the content of the resource. string ' completion status of the document, e.g. 'draft' datetime ' time of intial creation of the document string ' An unambiguous reference to the resource within a given
+context, e.g. ISBN. string ' descriptive words or short phrases likely to be used as
+search terms for this document string ' language the document is written in string ' name or other identifier (such as email address) of person
+who last modified the document datetime ' time the document was last printed datetime ' time the document was last modified int ' number of this revision, incremented by Word each time the
+document is saved. Note however python-docx does not automatically increment
+the revision number when it saves a document. string ' The topic of the content of the resource. string ' The name given to the resource. string ' free-form version string Understanding pictures and other shapes Document Settings objectsProvides access to document-level settings for a document. Accessed using the Document.settings property. The lxml element proxied by this object. True if this document has distinct odd and even page headers and footers. Read/write. Document objects Style-related objectsA style is used to collect a set of formatting properties under a single name
+and apply those properties to a content object all at once. This promotes
+formatting consistency throughout a document and across related documents
+and allows formatting changes to be made globally by changing the definition
+in the appropriate style. Provides access to the styles defined in a document. Accessed using the Document.styles property. Supports len(), iteration,
+and dictionary-style access by style name. Return a newly added style object of style_type and identified by name. A builtin style can be defined by passing True for the optional builtin
+argument. Return the default style for style_type or None if no default is defined
+for that type (not common). The lxml element proxied by this object. A LatentStyles object providing access to the default behaviors for latent
+styles and the collection of _LatentStyle objects that define overrides of
+those defaults for a particular named latent style. Base class for the various types of style object, paragraph, character, table,
+and numbering. These properties and methods are inherited by all style objects. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The lxml element proxied by this object. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. Member of WD_STYLE_TYPE corresponding to the type of this style, e.g.
+WD_STYLE_TYPE.PARAGRAPH. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. Bases: docx.styles.style.BaseStyle A character style. A character style is applied to a Run object and primarily provides character-
+level formatting via the Font object in its font property. Style object this style inherits from or None if this style is not based on
+another style. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The Font object providing access to the character formatting properties for
+this style, such as font name and size. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. Bases: docx.styles.style.CharacterStyle A paragraph style. A paragraph style provides both character formatting and paragraph formatting such
+as indentation and line-spacing. Style object this style inherits from or None if this style is not based on
+another style. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The Font object providing access to the character formatting properties for
+this style, such as font name and size. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. ParagraphStyle object representing the style to be applied automatically
+to a new paragraph inserted after a paragraph of this style. Returns self if no next paragraph style is defined. Assigning None or self
+removes the setting such that new paragraphs are created using this same style. The ParagraphFormat object providing access to the paragraph formatting
+properties for this style such as indentation. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. Bases: docx.styles.style.ParagraphStyle A table style. A table style provides character and paragraph formatting for its contents as well
+as special table formatting properties. Style object this style inherits from or None if this style is not based on
+another style. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The Font object providing access to the character formatting properties for
+this style, such as font name and size. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. ParagraphStyle object representing the style to be applied automatically
+to a new paragraph inserted after a paragraph of this style. Returns self if no next paragraph style is defined. Assigning None or self
+removes the setting such that new paragraphs are created using this same style. The ParagraphFormat object providing access to the paragraph formatting
+properties for this style such as indentation. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. A numbering style. Not yet implemented. Provides access to the default behaviors for latent styles in this document and
+to the collection of _LatentStyle objects that define overrides of those defaults
+for a particular named latent style. Return a newly added _LatentStyle object to override the inherited defaults
+defined in this latent styles object for the built-in style having name. Integer between 0 and 99 inclusive specifying the default sort order for
+latent styles in style lists and the style gallery. None if no value is assigned, which causes Word to use the default value 99. Boolean specifying whether the default behavior for latent styles is to be
+hidden. A hidden style does not appear in the recommended list or in the style gallery. Boolean specifying whether the default behavior for latent styles is to be
+locked. A locked style does not appear in the styles panel or the style gallery and
+cannot be applied to document content. This behavior is only active when
+formatting protection is turned on for the document (via the Developer menu). Boolean specifying whether the default behavior for latent styles is to
+appear in the style gallery when not hidden. Boolean specifying whether the default behavior for latent styles is to be
+unhidden when first applied to content. The lxml element proxied by this object. Integer specifying the number of built-in styles to initialize to the
+defaults specified in this LatentStyles object. None if there is no setting in the XML (very uncommon). The default Word 2011
+template sets this value to 276, accounting for the built-in styles in Word
+2010. Proxy for an w:lsdException element, which specifies display behaviors for a
+built-in style when no definition for that style is stored yet in the styles.xml
+part. The values in this element override the defaults specified in the parent
+w:latentStyles element. Remove this latent style definition such that the defaults defined in the
+containing LatentStyles object provide the effective value for each of its
+attributes. Attempting to access any attributes on this object after calling this method
+will raise AttributeError. The lxml element proxied by this object. Tri-state value specifying whether this latent style should appear in the
+recommended list. None indicates the effective value is inherited from the parent
+<w:latentStyles> element. Tri-state value specifying whether this latent styles is locked. A locked style does not appear in the styles panel or the style gallery and
+cannot be applied to document content. This behavior is only active when
+formatting protection is turned on for the document (via the Developer menu). The name of the built-in style this exception applies to. The integer sort key for this latent style in the Word UI. Tri-state value specifying whether this latent style should appear in the
+Word styles gallery when not hidden. None indicates the effective value should be inherited from the default values
+in its parent LatentStyles object. Tri-state value specifying whether this style should have its hidden
+attribute set False the next time the style is applied to content. None indicates the effective value should be inherited from the default
+specified by its parent LatentStyles object. Document Settings objects Text-related objectsProvides access to document-level settings for a document. Accessed using the Document.settings property. The lxml element proxied by this object. True if this document has distinct odd and even page headers and footers. Read/write. Document objects Style-related objectsA style is used to collect a set of formatting properties under a single name
+and apply those properties to a content object all at once. This promotes
+formatting consistency throughout a document and across related documents
+and allows formatting changes to be made globally by changing the definition
+in the appropriate style. Provides access to the styles defined in a document. Accessed using the Document.styles property. Supports len(), iteration,
+and dictionary-style access by style name. Return a newly added style object of style_type and identified by name. A builtin style can be defined by passing True for the optional builtin
+argument. Return the default style for style_type or None if no default is defined
+for that type (not common). The lxml element proxied by this object. A LatentStyles object providing access to the default behaviors for latent
+styles and the collection of _LatentStyle objects that define overrides of
+those defaults for a particular named latent style. Base class for the various types of style object, paragraph, character, table,
+and numbering. These properties and methods are inherited by all style objects. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The lxml element proxied by this object. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. Member of WD_STYLE_TYPE corresponding to the type of this style, e.g.
+WD_STYLE_TYPE.PARAGRAPH. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. Bases: docx.styles.style.BaseStyle A character style. A character style is applied to a Run object and primarily provides character-
+level formatting via the Font object in its font property. Style object this style inherits from or None if this style is not based on
+another style. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The Font object providing access to the character formatting properties for
+this style, such as font name and size. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. Bases: docx.styles.style.CharacterStyle A paragraph style. A paragraph style provides both character formatting and paragraph formatting such
+as indentation and line-spacing. Style object this style inherits from or None if this style is not based on
+another style. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The Font object providing access to the character formatting properties for
+this style, such as font name and size. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. ParagraphStyle object representing the style to be applied automatically
+to a new paragraph inserted after a paragraph of this style. Returns self if no next paragraph style is defined. Assigning None or self
+removes the setting such that new paragraphs are created using this same style. The ParagraphFormat object providing access to the paragraph formatting
+properties for this style such as indentation. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. Bases: docx.styles.style.ParagraphStyle A table style. A table style provides character and paragraph formatting for its contents as well
+as special table formatting properties. Style object this style inherits from or None if this style is not based on
+another style. Read-only. True if this style is a built-in style. False indicates it is a custom
+(user-defined) style. Note this value is based on the presence of a
+customStyle attribute in the XML, not on specific knowledge of which styles
+are built into Word. Remove this style definition from the document. Note that calling this method does not remove or change the style applied to any
+document content. Content items having the deleted style will be rendered using
+the default style, as is any content with a style not defined in the document. The Font object providing access to the character formatting properties for
+this style, such as font name and size. True if display of this style in the style gallery and list of recommended
+styles is suppressed. False otherwise. In order to be shown in the style gallery, this value must be
+False and quick_style must be True. Read/write Boolean. True if this style is locked. A locked style does not appear in the styles
+panel or the style gallery and cannot be applied to document content. This
+behavior is only active when formatting protection is turned on for the document
+(via the Developer menu). The UI name of this style. ParagraphStyle object representing the style to be applied automatically
+to a new paragraph inserted after a paragraph of this style. Returns self if no next paragraph style is defined. Assigning None or self
+removes the setting such that new paragraphs are created using this same style. The ParagraphFormat object providing access to the paragraph formatting
+properties for this style such as indentation. The integer sort key governing display sequence of this style in the Word UI. None indicates no setting is defined, causing Word to use the default value of
+0. Style name is used as a secondary sort key to resolve ordering of styles
+having the same priority value. True if this style should be displayed in the style gallery when
+hidden is False. Read/write Boolean. True if an application should make this style visible the next time it is
+applied to content. False otherwise. Note that python-docx does not automatically unhide a style having
+True for this attribute when it is applied to content. A numbering style. Not yet implemented. Provides access to the default behaviors for latent styles in this document and
+to the collection of _LatentStyle objects that define overrides of those defaults
+for a particular named latent style. Return a newly added _LatentStyle object to override the inherited defaults
+defined in this latent styles object for the built-in style having name. Integer between 0 and 99 inclusive specifying the default sort order for
+latent styles in style lists and the style gallery. None if no value is assigned, which causes Word to use the default value 99. Boolean specifying whether the default behavior for latent styles is to be
+hidden. A hidden style does not appear in the recommended list or in the style gallery. Boolean specifying whether the default behavior for latent styles is to be
+locked. A locked style does not appear in the styles panel or the style gallery and
+cannot be applied to document content. This behavior is only active when
+formatting protection is turned on for the document (via the Developer menu). Boolean specifying whether the default behavior for latent styles is to
+appear in the style gallery when not hidden. Boolean specifying whether the default behavior for latent styles is to be
+unhidden when first applied to content. The lxml element proxied by this object. Integer specifying the number of built-in styles to initialize to the
+defaults specified in this LatentStyles object. None if there is no setting in the XML (very uncommon). The default Word 2011
+template sets this value to 276, accounting for the built-in styles in Word
+2010. Proxy for an w:lsdException element, which specifies display behaviors for a
+built-in style when no definition for that style is stored yet in the styles.xml
+part. The values in this element override the defaults specified in the parent
+w:latentStyles element. Remove this latent style definition such that the defaults defined in the
+containing LatentStyles object provide the effective value for each of its
+attributes. Attempting to access any attributes on this object after calling this method
+will raise AttributeError. The lxml element proxied by this object. Tri-state value specifying whether this latent style should appear in the
+recommended list. None indicates the effective value is inherited from the parent
+<w:latentStyles> element. Tri-state value specifying whether this latent styles is locked. A locked style does not appear in the styles panel or the style gallery and
+cannot be applied to document content. This behavior is only active when
+formatting protection is turned on for the document (via the Developer menu). The name of the built-in style this exception applies to. The integer sort key for this latent style in the Word UI. Tri-state value specifying whether this latent style should appear in the
+Word styles gallery when not hidden. None indicates the effective value should be inherited from the default values
+in its parent LatentStyles object. Tri-state value specifying whether this style should have its hidden
+attribute set False the next time the style is applied to content. None indicates the effective value should be inherited from the default
+specified by its parent LatentStyles object. Document Settings objects Text-related objectsProxy object wrapping a <w:p> element. Append run containing text and having character-style style. text can contain tab (\t) characters, which are converted to the
+appropriate XML form for a tab. text can also include newline (\n) or
+carriage return (\r) characters, each of which is converted to a line
+break. When text is None, the new run is empty. A member of the WD_PARAGRAPH_ALIGNMENT enumeration specifying the
+justification setting for this paragraph. A value of None indicates the paragraph has no directly-applied alignment
+value and will inherit its alignment value from its style hierarchy. Assigning
+None to this property removes any directly-applied alignment value. Return this same paragraph after removing all its content. Paragraph-level formatting, such as style, is preserved. True when one or more rendered page-breaks occur in this paragraph. A Hyperlink instance for each hyperlink in this paragraph. Return a newly created paragraph, inserted directly before this paragraph. If text is supplied, the new paragraph contains that text in a single run. If
+style is provided, that style is assigned to the new paragraph. Generate the runs and hyperlinks in this paragraph, in the order they appear. The content in a paragraph consists of both runs and hyperlinks. This method
+allows accessing each of those separately, in document order, for when the
+precise position of the hyperlink within the paragraph text is important. Note
+that a hyperlink itself contains runs. The ParagraphFormat object providing access to the formatting properties
+for this paragraph, such as line spacing and indentation. All rendered page-breaks in this paragraph. Most often an empty list, sometimes contains one page-break, but can contain
+more than one is rare or contrived cases. Sequence of Run instances corresponding to the <w:r> elements in this
+paragraph. Read/Write. ParagraphStyle object representing the style assigned to this paragraph. If
+no explicit style is assigned to this paragraph, its value is the default
+paragraph style for the document. A paragraph style name can be assigned in lieu
+of a paragraph style object. Assigning None removes any applied style, making
+its effective value the default paragraph style for the document. The textual content of this paragraph. The text includes the visible-text portion of any hyperlinks in the paragraph.
+Tabs and line breaks in the XML are mapped to \t and \n characters
+respectively. Assigning text to this property causes all existing paragraph content to be
+replaced with a single run containing the assigned text. A \t character in
+the text is mapped to a <w:tab/> element and each \n or \r
+character is mapped to a line break. Paragraph-level formatting, such as style,
+is preserved. All run-level formatting, such as bold or italic, is removed. Provides access to paragraph formatting such as justification, indentation, line
+spacing, space before and after, and widow/orphan control. A member of the WD_PARAGRAPH_ALIGNMENT enumeration specifying the
+justification setting for this paragraph. A value of None indicates paragraph alignment is inherited from the style
+hierarchy. Length value specifying the relative difference in indentation for the
+first line of the paragraph. A positive value causes the first line to be indented. A negative value produces
+a hanging indent. None indicates first line indentation is inherited from the
+style hierarchy. True if the paragraph should be kept 'in one piece' and not broken across a
+page boundary when the document is rendered. None indicates its effective value is inherited from the style hierarchy. True if the paragraph should be kept on the same page as the subsequent
+paragraph when the document is rendered. For example, this property could be used to keep a section heading on the same
+page as its first paragraph. None indicates its effective value is inherited
+from the style hierarchy. Length value specifying the space between the left margin and the left side
+of the paragraph. None indicates the left indent value is inherited from the style hierarchy.
+Use an Inches value object as a convenient way to apply indentation in units
+of inches. float or Length value specifying the space between baselines in
+successive lines of the paragraph. A value of None indicates line spacing is inherited from the style hierarchy.
+A float value, e.g. 2.0 or 1.75, indicates spacing is applied in
+multiples of line heights. A Length value such as Pt(12) indicates spacing
+is a fixed height. The Pt value class is a convenient way to apply line
+spacing in units of points. Assigning None resets line spacing to inherit from
+the style hierarchy. A member of the WD_LINE_SPACING enumeration indicating how the value of
+line_spacing should be interpreted. Assigning any of the WD_LINE_SPACING members SINGLE,
+DOUBLE, or ONE_POINT_FIVE will cause the value of
+line_spacing to be updated to produce the corresponding line spacing. True if the paragraph should appear at the top of the page following the
+prior paragraph. None indicates its effective value is inherited from the style hierarchy. Length value specifying the space between the right margin and the right
+side of the paragraph. None indicates the right indent value is inherited from the style hierarchy.
+Use a Cm value object as a convenient way to apply indentation in units of
+centimeters. Length value specifying the spacing to appear between this paragraph and
+the subsequent paragraph. None indicates this value is inherited from the style hierarchy. Length
+objects provide convenience properties, such as pt and
+inches, that allow easy conversion to various length units. Length value specifying the spacing to appear between this paragraph and
+the prior paragraph. None indicates this value is inherited from the style hierarchy. Length
+objects provide convenience properties, such as pt and
+cm, that allow easy conversion to various length units. TabStops object providing access to the tab stops defined for this
+paragraph format. True if the first and last lines in the paragraph remain on the same page
+as the rest of the paragraph when Word repaginates the document. None indicates its effective value is inherited from the style hierarchy. Proxy object wrapping a <w:hyperlink> element. A hyperlink occurs as a child of a paragraph, at the same level as a Run. A
+hyperlink itself contains runs, which is where the visible text of the hyperlink is
+stored. The 'URL' of the hyperlink (but not necessarily a web link). While commonly a web link like 'https://google.com' the hyperlink address can
+take a variety of forms including 'internal links' to bookmarked locations
+within the document. True when the text of this hyperlink is broken across page boundaries. This is not uncommon and can happen for example when the hyperlink text is
+multiple words and occurs in the last line of a page. Theoretically, a hyperlink
+can contain more than one page break but that would be extremely uncommon in
+practice. Still, this value should be understood to mean that 'one-or-more'
+rendered page breaks are present. List of Run instances in this hyperlink. Together these define the visible text of the hyperlink. The text of a hyperlink
+is typically contained in a single run will be broken into multiple runs if for
+example part of the hyperlink is bold or the text was changed after the document
+was saved. String formed by concatenating the text of each run in the hyperlink. Tabs and line breaks in the XML are mapped to \t and \n characters
+respectively. Note that rendered page-breaks can occur within a hyperlink but
+they are not reflected in this text. Proxy object wrapping <w:r> element. Several of the properties on Run take a tri-state value, True, False, or None.
+True and False correspond to on and off respectively. None indicates the
+property is not specified directly on the run and its effective value is taken from
+the style hierarchy. Add a break element of break_type to this run. break_type can take the values WD_BREAK.LINE, WD_BREAK.PAGE, and
+WD_BREAK.COLUMN where WD_BREAK is imported from docx.enum.text.
+break_type defaults to WD_BREAK.LINE. Return InlineShape containing image identified by image_path_or_stream. The picture is added to the end of this run. image_path_or_stream can be a path (a string) or a file-like object containing
+a binary image. If neither width nor height is specified, the picture appears at
+its native size. If only one is specified, it is used to compute a scaling
+factor that is then applied to the unspecified dimension, preserving the aspect
+ratio of the image. The native size of the picture is calculated using the dots-
+per-inch (dpi) value specified in the image file, defaulting to 72 dpi if no
+value is specified, as is often the case. Add a <w:tab/> element at the end of the run, which Word interprets as a
+tab character. Returns a newly appended _Text object (corresponding to a new <w:t>
+child element) to the run, containing text. Compare with the possibly more friendly approach of assigning text to the
+Run.text property. Read/write tri-state value. When True, causes the text of the run to appear in bold face. When False,
+the text unconditionally appears non-bold. When None the bold setting for this
+run is inherited from the style hierarchy. Return reference to this run after removing all its content. All run formatting is preserved. True when one or more rendered page-breaks occur in this run. Note that 'hard' page-breaks inserted by the author are not included. A hard
+page-break gives rise to a rendered page-break in the right position so if those
+were included that page-break would be 'double-counted'. It would be very rare for multiple rendered page-breaks to occur in a single
+run, but it is possible. The Font object providing access to the character formatting properties for
+this run, such as font name and size. Read/write tri-state value. When True, causes the text of the run to appear in italics. When False, the
+text unconditionally appears non-italic. When None the italic setting for this
+run is inherited from the style hierarchy. Generate the content-items in this run in the order they appear. NOTE: only content-types currently supported by python-docx are generated. In
+this version, that is text and rendered page-breaks. Drawing is included but
+currently only provides access to its XML element (CT_Drawing) on its
+._drawing attribute. Drawing attributes and methods may be expanded in
+future releases. There are a number of element-types that can appear inside a run, but most of
+those (w:br, w:cr, w:noBreakHyphen, w:t, w:tab) have a clear plain-text
+equivalent. Any contiguous range of such elements is generated as a single
+str. Rendered page-break and drawing elements are generated individually. Any
+other elements are ignored. Read/write. A CharacterStyle object representing the character style applied to this run.
+The default character style for the document (often Default Character Font) is
+returned if the run has no directly-applied character style. Setting this
+property to None removes any directly-applied character style. String formed by concatenating the text equivalent of each run. Each <w:t> element adds the text characters it contains. A <w:tab/> element
+adds a t character. A <w:cr/> or <w:br> element each add a n
+character. Note that a <w:br> element can indicate a page break or column
+break as well as a line break. Only line-break <w:br> elements translate to
+a n character. Others are ignored. All other content child elements, such as
+<w:drawing>, are ignored. Assigning text to this property has the reverse effect, translating each t
+character to a <w:tab/> element and each n or r character to a
+<w:cr/> element. Any existing run content is replaced. Run formatting is
+preserved. The underline style for this Run. Value is one of None, True, False, or a member of WD_UNDERLINE. A value of None indicates the run has no directly-applied underline value and
+so will inherit the underline value of its containing paragraph. Assigning
+None to this property removes any directly-applied underline value. A value of False indicates a directly-applied setting of no underline,
+overriding any inherited value. A value of True indicates single underline. The values from WD_UNDERLINE are used to specify other outline styles such
+as double, wavy, and dotted. Proxy object for parent of a <w:rPr> element and providing access to
+character properties such as font name, font size, bold, and subscript. Read/write. Causes text in this font to appear in capital letters. Read/write. Causes text in this font to appear in bold. A ColorFormat object providing a way to get and set the text color for this
+font. Read/write tri-state value. When True, causes the characters in the run to be treated as complex script
+regardless of their Unicode values. Read/write tri-state value. When True, causes the complex script characters in the run to be displayed in
+bold typeface. Read/write tri-state value. When True, causes the complex script characters in the run to be displayed in
+italic typeface. Read/write tri-state value. When True, causes the text in the run to appear with double strikethrough. Read/write tri-state value. When True, causes the text in the run to appear as if raised off the page in
+relief. Read/write tri-state value. When True, causes the text in the run to be hidden from display, unless
+applications settings force hidden text to be shown. Color of highlighing applied or None if not highlighted. Read/write tri-state value. When True, causes the text in the run to appear as if pressed into the page. Read/write tri-state value. When True, causes the text of the run to appear in italics. None indicates
+the effective value is inherited from the style hierarchy. Read/write tri-state value. When True, specifies this run contains WML that should be handled as though it
+was Office Open XML Math. The typeface name for this Font. Causes the text it controls to appear in the named font, if a matching font is
+found. None indicates the typeface is inherited from the style hierarchy. Read/write tri-state value. When True, specifies that the contents of this run should not report any
+errors when the document is scanned for spelling and grammar. Read/write tri-state value. When True causes the characters in the run to appear as if they have an
+outline, by drawing a one pixel wide border around the inside and outside
+borders of each character glyph. Read/write tri-state value. When True causes the text in the run to have right-to-left characteristics. Read/write tri-state value. When True causes the text in the run to appear as if each character has a
+shadow. Font height in English Metric Units (EMU). None indicates the font size should be inherited from the style hierarchy.
+Length is a subclass of int having properties for convenient conversion into
+points or other length units. The docx.shared.Pt class allows
+convenient specification of point values: Read/write tri-state value. When True causes the lowercase characters in the run to appear as capital
+letters two points smaller than the font size specified for the run. Read/write tri-state value. When True causes the run to use the document grid characters per line settings
+defined in the docGrid element when laying out the characters in this run. Read/write tri-state value. When True, specifies that the given run shall always behave as if it is
+hidden, even when hidden text is being displayed in the current document. The
+property has a very narrow, specialized use related to the table of contents.
+Consult the spec ('17.3.2.36) for more details. Read/write tri-state value. When True causes the text in the run to appear with a single horizontal line
+through the center of the line. Boolean indicating whether the characters in this Font appear as subscript. None indicates the subscript/subscript value is inherited from the style
+hierarchy. Boolean indicating whether the characters in this Font appear as
+superscript. None indicates the subscript/superscript value is inherited from the style
+hierarchy. The underline style for this Font. The value is one of None, True, False, or a member of WD_UNDERLINE. None indicates the font inherits its underline value from the style hierarchy.
+False indicates no underline. True indicates single underline. The values
+from WD_UNDERLINE are used to specify other outline styles such as double,
+wavy, and dotted. Read/write tri-state value. When True, specifies that the contents of this run shall be hidden when the
+document is displayed in web page view. A page-break inserted by Word during page-layout for print or display purposes. This usually does not correspond to a 'hard' page-break inserted by the document
+author, rather just that Word ran out of room on one page and needed to start
+another. The position of these can change depending on the printer and page-size, as
+well as margins, etc. They also will change in response to edits, but not until Word
+loads and saves the document. Note these are never inserted by python-docx because it has no rendering function.
+These are generally only useful for text-extraction of existing documents when
+python-docx is being used solely as a document 'reader'. NOTE: a rendered page-break can occur within a hyperlink; consider a multi-word
+hyperlink like 'excellent Wikipedia article on LLMs' that happens to fall close to
+the end of the last line on a page such that the page breaks between 'Wikipedia' and
+'article'. In such a 'page-breaks-in-hyperlink' case, THESE METHODS WILL 'MOVE' THE
+PAGE-BREAK to occur after the hyperlink, such that the entire hyperlink appears in
+the paragraph returned by .preceding_paragraph_fragment. While this places the
+'tail' text of the hyperlink on the 'wrong' page, it avoids having two hyperlinks
+each with a fragment of the actual text and pointing to the same address. A 'loose' paragraph containing the content following this page-break. HAS POTENTIALLY SURPRISING BEHAVIORS so read carefully to be sure this is what
+you want. This is primarily targeted toward text-extraction use-cases for which
+precisely associating text with the page it occurs on is important. Compare .preceding_paragraph_fragment as these two are intended to be used
+together. This value is None when no content follows this page-break. This case is
+unlikely to occur in practice because Word places even-paragraph-boundary
+page-breaks on the paragraph following the page-break. Still, it is possible
+and must be checked for. Returning None for this case avoids 'inserting' an
+extra, non-existent paragraph into the content stream. Note that content can
+include DrawingML items like images or charts, not just text. The returned paragraph is divorced from the document body. Any changes made to
+it will not be reflected in the document. It is intended to provide a container
+(Paragraph) with familiar properties and methods that can be used to
+characterize the paragraph content following a mid-paragraph page-break. Contains no portion of the hyperlink when this break occurs within a hyperlink. A 'loose' paragraph containing the content preceding this page-break. Compare .following_paragraph_fragment as these two are intended to be used
+together. This value is None when no content precedes this page-break. This case is
+common and occurs whenever a page breaks on an even paragraph boundary.
+Returning None for this case avoids 'inserting' a non-existent paragraph into
+the content stream. Note that content can include DrawingML items like images or
+charts. Note the returned paragraph is divorced from the document body. Any changes
+made to it will not be reflected in the document. It is intended to provide a
+familiar container (Paragraph) to interrogate for the content preceding this
+page-break in the paragraph in which it occured. Contains the entire hyperlink when this break occurs within a hyperlink. An individual tab stop applying to a paragraph or style. Accessed using list semantics on its containing TabStops object. A member of WD_TAB_ALIGNMENT specifying the alignment setting for this
+tab stop. Read/write. A member of WD_TAB_LEADER specifying a repeating character used as a
+'leader', filling in the space spanned by this tab. Assigning None produces the same result as assigning WD_TAB_LEADER.SPACES.
+Read/write. A Length object representing the distance of this tab stop from the inside
+edge of the paragraph. May be positive or negative. Read/write. A sequence of TabStop objects providing access to the tab stops of a paragraph
+or paragraph style. Supports iteration, indexed access, del, and len(). It is accesed using the
+tab_stops property of ParagraphFormat; it is not intended
+to be constructed directly. Add a new tab stop at position, a Length object specifying the location
+of the tab stop relative to the paragraph edge. A negative position value is valid and appears in hanging indentation. Tab
+alignment defaults to left, but may be specified by passing a member of the
+WD_TAB_ALIGNMENT enumeration as alignment. An optional leader character
+can be specified by passing a member of the WD_TAB_LEADER enumeration as
+leader. Remove all custom tab stops. Style-related objects Table objectsTable objects are constructed using the add_table() method on Document. Proxy class for a WordprocessingML <w:tbl> element. Return a _Column object of width, newly added rightmost to the table. Return a _Row instance, newly added bottom-most to the table. Read/write. A member of WD_TABLE_ALIGNMENT or None, specifying the positioning of this
+table between the page margins. None if no setting is specified, causing the
+effective value to be inherited from the style hierarchy. True if column widths can be automatically adjusted to improve the fit of
+cell contents. False if table layout is fixed. Column widths are adjusted in either case if
+total column width exceeds page width. Read/write boolean. Return _Cell instance correponding to table cell at row_idx, col_idx
+intersection, where (0, 0) is the top, left-most cell. Sequence of cells in the column at column_idx in this table. _Columns instance representing the sequence of columns in this table. Sequence of cells in the row at row_idx in this table. _Rows instance containing the sequence of rows in this table. Read/write. A _TableStyle object representing the style applied to this
+table. The default table style for the document (often Normal Table) is
+returned if the table has no directly-applied style. Assigning None to this
+property removes any directly-applied table style causing it to inherit the
+default table style of the document. Note that the style name of a table style
+differs slightly from that. displayed in the user interface; a hyphen, if it appears, must be removed. For
+example, Light Shading - Accent 1 becomes Light Shading Accent 1. A member of WD_TABLE_DIRECTION indicating the direction in which the
+table cells are ordered, e.g. WD_TABLE_DIRECTION.LTR. None indicates the value is inherited from the style hierarchy. Table cell. Return a paragraph newly added to the end of the content in this cell. If present, text is added to the paragraph in a single run. If specified, the
+paragraph style style is applied. If style is not specified or is None,
+the result is as though the 'Normal' style was applied. Note that the formatting
+of text in a cell can be influenced by the table style. text can contain tab
+(\t) characters, which are converted to the appropriate XML form for a tab.
+text can also include newline (\n) or carriage return (\r)
+characters, each of which is converted to a line break. Return a table newly added to this cell after any existing cell content,
+having rows rows and cols columns. An empty paragraph is added after the table because Word requires a paragraph
+element as the last element in every cell. Return a merged cell created by spanning the rectangular region having this
+cell and other_cell as diagonal corners. Raises InvalidSpanError if the cells do not define a rectangular region. List of paragraphs in the cell. A table cell is required to contain at least one block-level element and end
+with a paragraph. By default, a new cell contains a single paragraph. Read-only List of tables in the cell, in the order they appear. Read-only. The entire contents of this cell as a string of text. Assigning a string to this property replaces all existing content with a single
+paragraph containing the assigned text in a single run. Member of WD_CELL_VERTICAL_ALIGNMENT or None. A value of None indicates vertical alignment for this cell is inherited.
+Assigning None causes any explicitly defined vertical alignment to be removed,
+restoring inheritance. The width of this cell in EMU, or None if no explicit width is set. Table row. Sequence of _Cell instances corresponding to cells in this row. Return a Length object representing the height of this cell, or None if
+no explicit height is set. Return the height rule of this cell as a member of the WD_ROW_HEIGHT_RULE
+enumeration, or None if no explicit height_rule is set. Reference to the Table object this row belongs to. Table column. Sequence of _Cell instances corresponding to cells in this column. Reference to the Table object this column belongs to. The width of this column in EMU, or None if no explicit width is set. Sequence of _Row objects corresponding to the rows in a table. Supports len(), iteration, indexed access, and slicing. Reference to the Table object this row collection belongs to. Sequence of _Column instances corresponding to the columns in a table. Supports len(), iteration and indexed access. Reference to the Table object this column collection belongs to. Text-related objects Section objectsProvides access to section properties such as margins and page orientation. Sequence of Section objects corresponding to the sections in the document. Supports len(), iteration, and indexed access. Document section, providing access to section and page setup settings. Also provides access to headers and footers. Read/write. Bottom margin for pages in this section, in EMU. None when no bottom margin has been specified. Assigning None removes any
+bottom-margin setting. True if this section displays a distinct first-page header and footer. Read/write. The definition of the first-page header and footer are accessed
+using first_page_header and first_page_footer respectively. _Footer object defining footer content for even pages. The content of this footer definition is ignored unless the document setting
+odd_and_even_pages_header_footer is set True. _Header object defining header content for even pages. The content of this header definition is ignored unless the document setting
+odd_and_even_pages_header_footer is set True. _Footer object defining footer content for the first page of this section. The content of this footer definition is ignored unless the property
+different_first_page_header_footer is set True. _Header object defining header content for the first page of this section. The content of this header definition is ignored unless the property
+different_first_page_header_footer is set True. _Footer object representing default page footer for this section. The default footer is used for odd-numbered pages when separate odd/even footers
+are enabled. It is used for both odd and even-numbered pages otherwise. Distance from bottom edge of page to bottom edge of the footer. Read/write. None if no setting is present in the XML. Length object representing page gutter size in English Metric Units. Read/write. The page gutter is extra spacing added to the inner margin to
+ensure even margins after page binding. Generally only used in book-bound
+documents with double-sided and facing pages. This setting applies to all pages in this section. _Header object representing default page header for this section. The default header is used for odd-numbered pages when separate odd/even headers
+are enabled. It is used for both odd and even-numbered pages otherwise. Distance from top edge of page to top edge of header. Read/write. None if no setting is present in the XML. Assigning None causes
+default value to be used. Generate each Paragraph or Table object in this section. Items appear in document order. Length object representing the left margin for all pages in this section in
+English Metric Units. WD_ORIENTATION member specifying page orientation for this section. One of WD_ORIENT.PORTRAIT or WD_ORIENT.LANDSCAPE. Total page height used for this section. This value is inclusive of all edge spacing values such as margins. Page orientation is taken into account, so for example, its expected value
+would be Inches(8.5) for letter-sized paper when orientation is landscape. Total page width used for this section. This value is like 'paper size' and includes all edge spacing values such as
+margins. Page orientation is taken into account, so for example, its expected value
+would be Inches(11) for letter-sized paper when orientation is landscape. Length object representing the right margin for all pages in this section
+in English Metric Units. Type of page-break (if any) inserted at the start of this section. For exmple, WD_SECTION_START.ODD_PAGE if the section should begin on the
+next odd page, possibly inserting two page-breaks instead of one. Length object representing the top margin for all pages in this section in
+English Metric Units. Page header, used for all three types (default, even-page, and first-page). Note that, like a document or table cell, a header must contain a minimum of one
+paragraph and a new or otherwise 'empty' header contains a single empty paragraph.
+This first paragraph can be accessed as header.paragraphs[0] for purposes of
+adding content to it. Using add_paragraph() by itself to add content will
+leave an empty paragraph above the newly added one. Return paragraph newly added to the end of the content in this container. The paragraph has text in a single run if present, and is given paragraph
+style style. If style is None, no paragraph style is applied, which has the same effect
+as applying the 'Normal' style. Return table of width having rows rows and cols columns. The table is appended appended at the end of the content in this container. width is evenly distributed between the table columns. True if this header/footer uses the definition from the prior section. False if this header/footer has an explicit definition. Assigning True to this property removes the header/footer definition for
+this section, causing it to 'inherit' the corresponding definition of the prior
+section. Assigning False causes a new, empty definition to be added for this
+section, but only if no definition is already present. A list containing the paragraphs in this container, in document order. Read-only. A list containing the tables in this container, in document order. Read-only. Page footer, used for all three types (default, even-page, and first-page). Note that, like a document or table cell, a footer must contain a minimum of one
+paragraph and a new or otherwise 'empty' footer contains a single empty paragraph.
+This first paragraph can be accessed as footer.paragraphs[0] for purposes of
+adding content to it. Using add_paragraph() by itself to add content will
+leave an empty paragraph above the newly added one. Return paragraph newly added to the end of the content in this container. The paragraph has text in a single run if present, and is given paragraph
+style style. If style is None, no paragraph style is applied, which has the same effect
+as applying the 'Normal' style. Return table of width having rows rows and cols columns. The table is appended appended at the end of the content in this container. width is evenly distributed between the table columns. True if this header/footer uses the definition from the prior section. False if this header/footer has an explicit definition. Assigning True to this property removes the header/footer definition for
+this section, causing it to 'inherit' the corresponding definition of the prior
+section. Assigning False causes a new, empty definition to be added for this
+section, but only if no definition is already present. A list containing the paragraphs in this container, in document order. Read-only. A list containing the tables in this container, in document order. Read-only. Table objects Shape-related objectsSequence of InlineShape instances, supporting len(), iteration, and indexed
+access. The width and height property of InlineShape provide a length object
+that is an instance of Length. These instances behave like an int, but also
+have built-in units conversion properties, e.g.: Proxy for an <wp:inline> element, representing the container for an inline
+graphical object. Read/write. The display height of this inline shape as an Emu instance. The type of this inline shape as a member of
+docx.enum.shape.WD_INLINE_SHAPE, e.g. LINKED_PICTURE. Read-only. Read/write. The display width of this inline shape as an Emu instance. Section objects DrawingML objectsLow-level drawing elements like color that appear in various document
+contexts. Provides access to color settings such as RGB color, theme color, and luminance
+adjustments. An RGBColor value or None if no RGB color is specified. When type is MSO_COLOR_TYPE.RGB, the value of this property will
+always be an RGBColor value. It may also be an RGBColor value if
+type is MSO_COLOR_TYPE.THEME, as Word writes the current value of a
+theme color when one is assigned. In that case, the RGB value should be
+interpreted as no more than a good guess however, as the theme color takes
+precedence at rendering time. Its value is None whenever type is
+either None or MSO_COLOR_TYPE.AUTO. Assigning an RGBColor value causes type to become MSO_COLOR_TYPE.RGB
+and any theme color is removed. Assigning None causes any color to be removed
+such that the effective color is inherited from the style hierarchy. Member of MSO_THEME_COLOR_INDEX or None if no theme color is specified. When type is MSO_COLOR_TYPE.THEME, the value of this property will
+always be a member of MSO_THEME_COLOR_INDEX. When type has any other
+value, the value of this property is None. Assigning a member of MSO_THEME_COLOR_INDEX causes type to become
+MSO_COLOR_TYPE.THEME. Any existing RGB value is retained but ignored by Word.
+Assigning None causes any color specification to be removed such that the
+effective color is inherited from the style hierarchy. Read-only. A member of MSO_COLOR_TYPE, one of RGB, THEME, or AUTO, corresponding to
+the way this color is defined. Its value is None if no color is applied at
+this level, which causes the effective color to be inherited from the style
+hierarchy. Shape-related objects Shared classesLength values in python-docx are expressed as a standardized Length value object.
+Length is a subclass of int, having all the behavior of an int. In
+addition, it has built-in units conversion properties, e.g.: Length objects are constructed using a selection of convenience constructors,
+allowing values to be expressed in the units most appropriate to the context. Base class for length constructor classes Inches, Cm, Mm, Px, and Emu. Behaves as an int count of English Metric Units, 914,400 to the inch, 36,000 to the
+mm. Provides convenience unit conversion methods in the form of read-only
+properties. Immutable. The equivalent length expressed in centimeters (float). The equivalent length expressed in English Metric Units (int). The equivalent length expressed in inches (float). The equivalent length expressed in millimeters (float). Floating point length in points. The equivalent length expressed in twips (int). Convenience constructor for length in inches, e.g. width = Inches(0.5). Convenience constructor for length in centimeters, e.g. height = Cm(12). Convenience constructor for length in millimeters, e.g. width = Mm(240.5). Convenience value class for specifying a length in points. Convenience constructor for length in twips, e.g. width = Twips(42). A twip is a twentieth of a point, 635 EMU. Convenience constructor for length in English Metric Units, e.g. width =
+Emu(457200). Immutable value object defining a particular RGB color. r, g, and b are each an integer in the range 0-255 inclusive. Using
+the hexidecimal integer notation, e.g. 0x42 may enhance readability
+where hex RGB values are in use: Return a new instance from an RGB color hex string like '3C2F80'. DrawingML objects EnumerationsDocumentation for the various enumerations used for python-docx property settings
+can be found here: Shared classes MSO_COLOR_TYPESpecifies the color specification scheme Example: Enumerations MSO_THEME_COLOR_INDEX
