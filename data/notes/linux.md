@@ -1,46 +1,29 @@
-# Linux Notes
+# **Linux Notes**
 
-## OS/Architecture
+## **Basic Commands**
 
+> [!TIP] Inspect the CPU architecture
 > ```shell
-> # To see the current CPU architecture in linux
-> dpkg --print-architecture  
+> dpkg --print-architecture
 > ```
->
-> arm64
-
+> ```arm64```
+-------------------------------------------------------------------------------
+> [!TIP] Inspect the kernel
 > ```shell
-> # To get information about the current linux OS
-> cat /etc/os-release  
-> ```
->
-> PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
-> NAME="Debian GNU/Linux"
-> VERSION_ID="11"
-> VERSION="11 (bullseye)"
-> VERSION_CODENAME=bullseye
-> ID=debian
-
-> ```shell
-> # To see the current linux kernel
 > uname -r  
 > ```
->
-> 6.1.43-rockchip-rk3588
+> ```6.1.43-rockchip-rk3588```
+-------------------------------------------------------------------------------
+> [!TIP] Inspect the OS
+> ```shell
+> cat /etc/os-release  
+> ``` 
+> ```PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"```  
+> ```NAME="Debian GNU/Linux"```  
+> ```VERSION_ID="11"```  
+> ```VERSION="11 (bullseye)"```  
+> ```VERSION_CODENAME=bullseye```  
+> ```ID=debian```  
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-# lerts
-
-> [!NOTE]
-> Useful information that users should know, even when skimming content.
-
-> [!TIP]
-> Helpful advice for doing things better or more easily.
-
-> [!IMPORTANT]
-> Key information users need to know to achieve their goal.
-
-> [!WARNING]
-> Urgent info that needs immediate user attention to avoid problems.
-
-> [!CAUTION]
-> Advises about risks or negative outcomes of certain actions.

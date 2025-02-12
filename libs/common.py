@@ -1,46 +1,18 @@
 ## Common functions that are used across projects and classes
 
-import base64
 import inspect
 import json
 import os
 import re
 import sqlite3
 from datetime import datetime as dt
-import urllib.error
-import urllib.parse
-import urllib.request
-from pprint import pprint
-from random import Random
 
 import numpy as np
-import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
-from markdownify import markdownify
-from IPython.display import Markdown
-from random_word import RandomWords
-from termcolor import colored
+from IPython.display import display
 from openai import OpenAI
-from configs.apis import APIS
+from random_word import RandomWords
 
-color_names = [
-    "green",
-    "light_magenta",
-    "blue",
-    "yellow",
-    "cyan",
-    "light_green",
-    "magenta",
-    "white",
-    "light_red",
-    "light_blue",
-    "red",
-    "light_grey",
-    "dark_grey",
-    "light_yellow",
-    "light_cyan",
-]
+from configs.apis import APIS
 
 
 def get_class(variable: object) -> str:
@@ -84,18 +56,6 @@ def describe_variable(variable: object) -> None:
     return None
 
 
-def eprint(printable: object, width: int = 80) -> None:
-    """Pretty print a given object with no sorting,
-
-    Args:
-        printable (object): The object to be pretty printed.
-
-    Returns:
-        None
-    """
-    return pprint(printable, sort_dicts=False, width=width)
-
-
 def parse_agent_response(full_response: object, expected_response_type: str) -> str:
     """Parse the agent response based on the expected response type.
 
@@ -132,24 +92,6 @@ def generate_random_name() -> str:
     """
     random_name = RandomWords().get_random_word()
     return random_name
-
-
-def print_heading(title_text: str, color: str = "cyan") -> None:
-    """Print a heading with a title enclosed in dashes.
-
-    Args:
-        title_text (str): The title text to be printed.
-        color (str, optional): The color of the heading. Defaults to "cyan".
-
-    Returns:
-        None
-    """
-    title_length = len(title_text)
-    title_bar = "----" + ("-" * title_length) + "----"
-    print(colored(title_bar, color, attrs=["bold"]))
-    print(colored(f"    {title_text}", color, attrs=["bold"]))
-    print(colored(title_bar, color, attrs=["bold"]))
-    return None
 
 
 def replace_placeholders(text: str, variables: dict) -> str:
@@ -214,46 +156,6 @@ def cosine_similarity(v1: np.ndarray, v2: np.ndarray) -> float:
     return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
 
 
-def print_dict(dict2print: dict, color: str = "cyan") -> None:
-    """Print a dictionary with colored keys and values.
-
-    Args:
-        dict2print (dict): The dictionary to be printed.
-        color (str, optional): The color of the keys. Defaults to "cyan".
-
-    Returns:
-        None
-    """
-    if not ((hasattr(dict2print, "items")) and (callable(dict2print.items))):
-        dict2print = dict2print.__dict__
-
-    for k, v in dict2print.items():
-        k = k + ":"
-        printkey = colored(f"{k:<10}", color=color, attrs=["bold"])
-        printval = colored(f"{v}", color=color)
-
-        print(printkey, printval)
-
-
-def map_member_colors(member_names: list, color_names: list) -> dict:
-    """Map member names to colors.
-
-    Args:
-        member_names (list): A list of member names.
-        color_names (list): A list of color names.
-
-    Returns:
-        dict: A dictionary mapping member names to colors.
-    """
-    member_colors = {}
-    for idx, member_name in enumerate(member_names):
-        member_colors[member_name] = color_names[idx]
-    return member_colors
-
-def print_md(markdown_str:str):
-    return Markdown(markdown_str)
-
-
 def query_database(database: sqlite3.Connection, query: str) -> None:
     """Execute a query on the SQLite database.
 
@@ -271,8 +173,6 @@ def query_database(database: sqlite3.Connection, query: str) -> None:
         print("Query executed successfully")
     except sqlite3.Error as e:
         print(f"The error '{e}' occurred")
-
-
 
 
 # from libs.io import read_file,write_file
@@ -307,15 +207,21 @@ def chat(
     max_tokens=None,
 ):
     try:
+        messages = [
+            {"role": "system", "content": prompt_system},
+            {"role": "user", "content": prompt_user},
+        ]
+        if "o1-preview" in model_name:
+            for msg_idx, msg in enumerate(messages):
+                if msg["role"] == "system":
+                    messages[msg_idx]["role"] = "user"
+
         response = OpenAI(
             api_key=APIS.get("openai").get("key").get_secret_value()
         ).chat.completions.create(
             model=model_name,
-            messages=[
-                {"role": "system", "content": prompt_system},
-                {"role": "user", "content": prompt_user},
-            ],
-            max_tokens=max_tokens,
+            messages=messages,
+            max_completion_tokens=max_tokens,
         )
 
         return response
@@ -324,8 +230,8 @@ def chat(
 
 
 def log_response(response, chat_config, dirs):
-    from libs.base import Timestamp
-    from libs.io import read_file, write_file
+    from dawgpyl.libs.base import Timestamp
+    from libs.utils.io import read_file, write_file
 
     log_exists = False
 
@@ -364,3 +270,20 @@ def log_response(response, chat_config, dirs):
         log = [model_artifact]
     write_file(log, filepath)
     return print(f"Response logged to: {filepath}")
+
+
+def print_log_entry(log, entry_num=-1):
+    log_entry = log[entry_num]
+    print_heading("LOG ENTRY", "blue")
+    print("run_datetime: ", log_entry["run_datetime"])
+    print("model_config: ", log_entry["model_config"])
+    print("prompt_tokens: ", log_entry["usage"]["prompt_tokens"])
+    print("completion_tokens: ", log_entry["usage"]["completion_tokens"])
+    print_heading("prompt_user")
+    print(log_entry["prompt_user"])
+    print_heading("prompt_system")
+    print(log_entry["prompt_system"])
+    print_heading("response")
+    display(print_md(log_entry["response"]))
+    print_heading("FULL LOG ENTRY")
+    eprint(log_entry)

@@ -1,0 +1,64 @@
+site_name: dawgpyl
+site_url: https://erikhodges.github.io/dawgpyl/
+repo_url: https://github.com/ErikHodges/dawgpyl
+repo_name: dawgpyl
+
+
+plugins:
+- search
+- mkdocstrings:
+    handlers:
+      python: 
+        # paths: [libs]
+        paths: [.] # This will include all files in the root directory
+        options:
+          # heading_level: 1
+          show_labels: true
+          show_source: false
+          show_bases: true
+          show_root_heading: false
+          show_symbol_type_toc: true
+          show_root_toc_entry: false
+          show_symbol_type_heading: true
+          show_category_heading: false
+          # show_inherited_members: true
+          members_order: alphabetical          
+          group_by_category: true
+          show_submodules: true
+          force_inspection: false
+          allow_inspection: true
+          docstring_style: google
+          separate_signature: true
+          merge_init_into_class: true          
+          # parameter_headings: true
+          summary:
+            modules: true
+            classes: true
+            attributes: true
+            functions: true
+            methods: true
+          docstring_options:
+            docstring_section_style: list
+            ignore_init_summary: false   
+            show_docstring_attributes: true
+            show_docstring_classes: true
+            
+            # annotations_path: full
+
+nav:
+  - 'index.md'
+  - 'documentation.md'
+
+theme:
+  name: material
+  logo: assets/EH_Logo.png
+  favicon: assets/dawgpyl_logo.png
+  features:
+    # - navigation.path
+    - navigation.sections
+    - toc.integrate    
+    # - toc.follow
+    # - navigation.expand
+    # - navigation.tabs
+    # - navigation.tabs.sticky
+    # - navigation.top

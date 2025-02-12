@@ -33,4 +33,10 @@ APIS = {
         "key": SecretStr(""),
     },
     "serper": {"key": SecretStr("")},
+    "oura": {
+        "key": SecretStr(""),
+        "Token": SecretStr(""),
+        "Note": "",
+        "CreatedAt": "",
+    },
 }
