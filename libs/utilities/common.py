@@ -287,3 +287,15 @@ def print_log_entry(log, entry_num=-1):
     display(print_md(log_entry["response"]))
     print_heading("FULL LOG ENTRY")
     eprint(log_entry)
+
+def strip_self_refs(self_reference: str) -> str:
+    """Replaces periods in self-references with underscores.
+
+    Args:
+        self_reference (str): The self-reference string to be modified.
+
+    Returns:
+        str: The modified self-reference string.
+    """
+    self_reference = self_reference.replace(".", "_")
+    return self_reference
