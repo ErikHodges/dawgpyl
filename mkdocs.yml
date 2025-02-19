@@ -48,7 +48,7 @@ plugins:
             # annotations_path: full
 
 nav: 
-  - 'index.md'
+  - Home: 'index.md'
   # - 'documentation.md'
   # - env: 'env.md'
   - Documentation:    

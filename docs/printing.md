@@ -1,3 +1,5 @@
-# printing
+# **printing**
+
+---
 
 ::: libs.utilities.printing

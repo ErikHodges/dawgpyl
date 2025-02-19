@@ -1,3 +1,5 @@
-# graphs
+# **graphs**
+
+---  
 
 ::: libs.graphs
