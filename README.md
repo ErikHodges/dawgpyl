@@ -1,9 +1,10 @@
-  <h1  style="border-color:#219db5;width:100%;border-width:2px;text-align:center;" align="center"> 
-  <code style="color:#219db5;">dawgpyl</code><br> 
-  <p style="font-size:120%">Directing Agents with Graphs Python Library</p>
-  </h1>
+<div id="title">
+<h1 style="border-color:#219db5;width:100%;border-width:2px;text-align:center;" align="center"> 
+<code style="color:#219db5;">dawgpyl</code><br>
+<span style="font-size:75%">Directing Agents with Graphs Python Library</span>
+</h1>
 
-<span style="font-size:120%;text-align:center;">
+<span style="font-size:150%;text-align:center;">
 
 <table style="border-width:0px;border-color:rgba(0,0,0,0);" align="center">
   <tr>
@@ -24,7 +25,7 @@
 <!-- | <ins> _Developed with_ **♥** _by_</ins>:  <br>**Erik L. Hodges, PhD.** <br> [**LinkedIn**](https://www.linkedin.com/in/erikhodges/)  /  [**GitHub**](https://github.com/ErikHodges)  |  <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a> |
 |---|---| -->
 
-</span>
+</span></div>
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
