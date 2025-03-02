@@ -31,6 +31,7 @@
 <div id="navigation">
 <span style="font-size:120%;font-weight:bold;text-align:center;" align="center">
 
+---
 
 <a href=https://ErikHodges.github.io/dawgpyl>Documentation</a><br>
 <a href=#overview>Overview</a><br>
@@ -127,6 +128,7 @@ $ -->
 
 
 ---
+
 - `APIs`
   - Application program interface (API) to a model or tool provider
   - Often requires you to register an account and create an API key
@@ -135,6 +137,7 @@ $ -->
 <br>
 
 ---
+
 - `Model`
   - A specific version of a model
     - (e.g., "gpt-4", "4o", "claude-3.7", "deepseek-r1")
@@ -276,7 +279,6 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 > ```
 <br>
 
----
 
 </details></div>
 
