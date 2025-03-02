@@ -2,7 +2,7 @@
 
 from langchain_core.prompts import PromptTemplate
 
-
+# -8<- [start:prompts]
 PROMPTS = {
     "default": {
         "prompt_params": [
@@ -30,6 +30,7 @@ PROMPTS = {
             },
         },
     },
+    # -8<- [end:prompts]
     "responder": {
         "prompt_params": [
             "self.task.objective",

@@ -23,7 +23,7 @@
 - Placing the entire code + outputs in a markdown block `>` enhances readability
 ---
 > [!NOTE] EXAMPLE 1
-> ```python
+> ```python {linenums="1"}
 > # To print hello world in python
 > print("Hello World!")
 > ```
@@ -47,5 +47,9 @@
 > ```VERSION="11 (bullseye)"```  
 > ```VERSION_CODENAME=bullseye```  
 > ```ID=debian```  
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
+
+---
+---
+
+<!-- USE THE LINE BELOW TO PICK OUT COLORS -->
+<!-- #219db5 -->
