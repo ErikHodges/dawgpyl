@@ -1,11 +1,11 @@
   <h1  style="border-color:#219db5;width:100%;border-width:2px;text-align:center;" align="center"> 
   <code style="color:#219db5;">dawgpyl</code><br> 
-  Directing Agents with Graphs Python Library
+  <p style="font-size:120%">Directing Agents with Graphs Python Library</p>
   </h1>
 
 <span style="font-size:120%;text-align:center;">
 
-<table style="border-width:0px;border-color:rgba(0,0,0,0);align:center;">
+<table style="border-width:0px;border-color:rgba(0,0,0,0);" align="center">
   <tr>
     <td>
       <ins> <i>Developed with</i> <b> ♥ </b>by</ins>:<br>
@@ -29,7 +29,7 @@
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
 <div id="navigation">
-<span style="font-size:120%;font-weight:bold;text-align:center;">
+<span style="font-size:120%;font-weight:bold;text-align:center;" align="center">
 
 
 <a href=https://ErikHodges.github.io/dawgpyl>Documentation</a><br>
