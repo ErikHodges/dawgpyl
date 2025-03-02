@@ -1,11 +1,11 @@
-  <h1  style="border-color:#219db5;width:100%;border-width:2px;text-align:center;margin-left:0"> 
-  <code style="color:#219db5;">dawgpyl</code> 
-  - Directing Agents with Graphs Python Library
+  <h1  style="border-color:#219db5;width:100%;border-width:2px;text-align:center;"> 
+  <code style="color:#219db5;">dawgpyl</code><br> 
+  Directing Agents with Graphs Python Library
   </h1>
 
 <span style="font-size:120%;text-align:center;">
 
-<!-- <table align="center">
+<table style="border-width:0px;border-color:rgba(0,0,0,0);align:center;">
   <tr>
     <td>
       <ins> <i>Developed with</i> <b> ♥ </b>by</ins>:<br>
@@ -19,10 +19,10 @@
       <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a>
     </td>
     </tr>
-</table> -->
+</table>
 
-| <ins> _Developed with_ **♥** _by_</ins>:  <br>**Erik L. Hodges, PhD.** <br> [**LinkedIn**](https://www.linkedin.com/in/erikhodges/)  /  [**GitHub**](https://github.com/ErikHodges)  |  <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a> |
-|---|---|
+<!-- | <ins> _Developed with_ **♥** _by_</ins>:  <br>**Erik L. Hodges, PhD.** <br> [**LinkedIn**](https://www.linkedin.com/in/erikhodges/)  /  [**GitHub**](https://github.com/ErikHodges)  |  <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a> |
+|---|---| -->
 
 </span>
 
@@ -37,13 +37,18 @@
 <a href=#how_dawgpyl_works>How <code style="color:#219db5">dawgpyl</code> Works</a><br>
 <a href=#quickstart>Quickstart</a><br>
 
-
-<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
-
 </span>
 </div>
 
+<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
+
+> [!CAUTION]
+> `Agent` responses are stochastic  
+> You are responsible for ensuring agents exhibit desired behaviors  
+> **Always review outputs**  
+
+<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
 <div id="overview" >
 <details><summary><h2 style="display:inline-block;border-color:rgba(0,0,0,0)">
@@ -57,10 +62,6 @@ Overview
 - Each `Agent` can be configured to guide and constrain its behaviors to suit your needs.
 
 <br>
-
-> [!CAUTION]
-> Agent responses are stochastic<br>You are responsible for ensuring agents exhibit desired behaviors<br>**Always review outputs**  
-
 
 </details></div>
 
