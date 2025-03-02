@@ -154,13 +154,12 @@ $ -->
 
 ### `Agent` 
 - Single instances of an LLM-client (i.e., a chat).
-- An `Agent` is given a `Task`
+- `Agents` are given `Tasks`
 ### `AgentConfig`
 - Name
 - Model
 - Persona
 - Task
-- ~~Team~~ **?????**
 <br>
 
 <!-- ---
@@ -213,7 +212,7 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 <details><summary><h2 style="display:inline-block;border-color:rgba(0,0,0,0)">Quickstart
 </h2></summary>
 
-- 0. Requirements 
+### 0. Requirements 
   - Skills
     - Basic understanding of python programming
   - Programmatic access to an LLM (API key)
@@ -277,8 +276,9 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 > ```
 <br>
 
-
 </details></div>
+
+
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
