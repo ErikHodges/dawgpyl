@@ -5,13 +5,13 @@
 
 <span style="font-size:120%;text-align:center;">
 
-<table align="center">
+<!-- <table align="center">
   <tr>
     <td>
       <ins> <i>Developed with</i> <b> ♥ </b>by</ins>:<br>
       <b>Erik L. Hodges, PhD.<b> 
       <br> 
-      <a href=https://www.linkedin.com/in/erikhodges/>LinkedIn</a>  
+      <a href=https://www.linkedin.com/in/erikhodges>LinkedIn</a>  
       /  
       <a href=https://github.com/ErikHodges>GitHub</a>
     </td>
@@ -19,10 +19,10 @@
       <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a>
     </td>
     </tr>
-</table>
+</table> -->
 
-<!-- | <ins> _Developed with_ **♥** _by_</ins>:  <br>**Erik L. Hodges, PhD.** <br> [**LinkedIn**](https://www.linkedin.com/in/erikhodges/)  /  [**GitHub**](https://github.com/ErikHodges)  |  <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a> |
-|---|---| -->
+| <ins> _Developed with_ **♥** _by_</ins>:  <br>**Erik L. Hodges, PhD.** <br> [**LinkedIn**](https://www.linkedin.com/in/erikhodges/)  /  [**GitHub**](https://github.com/ErikHodges)  |  <a href="https://www.ErikHodges.com"><img src="docs/assets/EH_Logo.png" width="60"></a> |
+|---|---|
 
 </span>
 
@@ -59,11 +59,9 @@ Overview
 <br>
 
 > [!CAUTION]
-> <span style="color:#F85149;">
-> <code style="color:#F85149;">Agent</code> responses are stochastic  
+> `Agent` responses are stochastic  
 > You are responsible for ensuring agents exhibit desired behaviors  
-> **<ins> Always review outputs</ins>**  
-> </span>
+> **Always review outputs**  
 
 </details></div>
 
@@ -81,7 +79,7 @@ How <code style="color:#219db5;">dawgpyl</code> works
 
 <span style="font-size:100%;font-weight:normal">
 
-- [`Prompt`](#site/prompts/index.html) ( `PromptSystem` , `PromptUser`, `ResponseFormat` )
+- `Prompt` ( `PromptSystem` , `PromptUser`, `ResponseFormat` )
 
 - `Task` ( `Prompt` )
 
@@ -272,11 +270,8 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 ---
 
 > [!TIP]
-> <span style="color:#3FB950;">
-> <code style="color:#3FB950;">Teams</code> of <code style="color:#3FB950;">Agents</code> can be configured to follow standardized workflows.
-> - <code style="color:#3FB950;">configs/teams.py</code>
-> - <code style="color:#3FB950;">configs/projects.py</code>
-> </span>
+> `Teams` of `Agents` can be configured to follow standardized workflows.
+
 
 </details></div>
 
