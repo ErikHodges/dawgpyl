@@ -27,11 +27,10 @@
 
 </span></div>
 
+<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
 <div id="navigation">
 <span style="font-size:120%;font-weight:bold;text-align:center;" align="center">
-
----
 
 <a href=https://ErikHodges.github.io/dawgpyl>Documentation</a><br>
 <a href=#overview>Overview</a><br>
@@ -40,7 +39,6 @@
 
 </span>
 </div>
-
 
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
@@ -129,20 +127,20 @@ $ -->
 
 ---
 
-- `APIs`
-  - Application program interface (API) to a model or tool provider
-  - Often requires you to register an account and create an API key
-  - API keys are stored in
-    - `configs/apis.py`
+### `APIs`
+- Application program interface (API) to a model or tool provider
+- Often requires you to register an account and create an API key
+- API keys are stored in
+  - `configs/apis.py`
 <br>
 
 ---
 
-- `Model`
+### `Model`
   - A specific version of a model
     - (e.g., "gpt-4", "4o", "claude-3.7", "deepseek-r1")
-  - **Currently supported model types**: ["embedding","llm"]
-- `ModelConfig`
+    - **Currently supported model types**: ["embedding","llm"]
+### `ModelConfig`
   - `configs/models.py`
 <br>
 
@@ -154,34 +152,34 @@ $ -->
 ---
  -->
 
-- `Agent` 
-  - Single instances of an LLM-client (i.e., a chat).
-  - An `Agent` is given a `Task`
-- `AgentConfig`
-  - Name
-  - Model
-  - Persona
-  - Task
-  - ~~Team~~ **?????**
+### `Agent` 
+- Single instances of an LLM-client (i.e., a chat).
+- An `Agent` is given a `Task`
+### `AgentConfig`
+- Name
+- Model
+- Persona
+- Task
+- ~~Team~~ **?????**
 <br>
+
+<!-- ---
+
+### `Tasks`
+### `TaskConfig`
+<br> -->
 
 ---
 
-- `Tasks`
-- `TaskConfig`
-<br>
-
----
-
-- `Teams` 
-  - Groups of `Agents`
-  - `Teams` are given `Goals`
-- `TeamConfig`
-  - Name: "Research"
-  - Supervisor: `Agent`
-  - Members: [`Agent`,`Agent`]
-  - Goal: "Please produce a cohesive report summarizing the reasons that Erik is a cool guy"
-  - Log: [{`Target`:`Event`},{`Target`:`Event`}]
+### `Teams` 
+- Groups of `Agents`
+- `Teams` are given `Goals`
+### `TeamConfig`
+- Name: "Research"
+- Supervisor: `Agent`
+- Members: [`Agent`,`Agent`]
+- Goal: "Please produce a cohesive report summarizing the reasons that Erik is a cool guy"
+- Log: [{`Target`:`Event`},{`Target`:`Event`}]
 <br>
 
 <!-- 
@@ -215,25 +213,25 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 <details><summary><h2 style="display:inline-block;border-color:rgba(0,0,0,0)">Quickstart
 </h2></summary>
 
-### 0. Requirements 
-- Skills
-  - Basic understanding of python programming
-- Programmatic access to an LLM (API key)
-  - OpenAI
-  - Anthropic
-- Software
-  - git
-  - python 3.11
-- [Documentation](https://erikhodges.github.io/dawgpyl/)
-  - (Offline) view the docs in your browser using the [mkdocs library](https://www.mkdocs.org/)
-    > ```bash
-    > # install mkdocs
-    > pip install -U mkdocs
-    > # Navigate to the dawgpyl directory
-    > cd dawgpyl
-    > # Serve the documents
-    > mkdocs serve
-    > ```
+- 0. Requirements 
+  - Skills
+    - Basic understanding of python programming
+  - Programmatic access to an LLM (API key)
+    - OpenAI
+    - Anthropic
+  - Software
+    - git
+    - python 3.11
+  - [Documentation](https://erikhodges.github.io/dawgpyl/)
+    - (Offline) view the docs in your browser using the [mkdocs library](https://www.mkdocs.org/)
+      > ```bash
+      > # install mkdocs
+      > pip install -U mkdocs
+      > # Navigate to the dawgpyl directory
+      > cd dawgpyl
+      > # Serve the documents
+      > mkdocs serve
+      > ```
 
 
 ### 1. Clone the <code style="color:#219db5;">dawgpyl</code> repository to your local machine
@@ -246,7 +244,7 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 
 ### 2. Create a virtual environment and activate it
 
-- **Windows**
+- Windows
   > ```bash
   > # Navigate to the directory where you cloned the repository
   > cd YOUR_CODE_DIRECTORY/dawgpyl
@@ -254,7 +252,7 @@ note: IF it is possible that a Team's members can be a collection of teams, then
   > dpenv/Scripts/activate
   > ```
 
-- **Linux**
+- Linux
   > ```bash
   > # Navigate to the directory where you cloned the repository
   > cd YOUR_CODE_DIRECTORY/dawgpyl
