@@ -1,4 +1,4 @@
-  <h1  style="border-color:#219db5;width:100%;border-width:2px;text-align:center;"> 
+  <h1  style="border-color:#219db5;width:100%;border-width:2px;text-align:center;" align="center"> 
   <code style="color:#219db5;">dawgpyl</code><br> 
   Directing Agents with Graphs Python Library
   </h1>
