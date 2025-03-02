@@ -59,7 +59,7 @@ Overview
 <br>
 
 > [!CAUTION]
-> `Agent` responses are stochastic<br>You are responsible for ensuring agents exhibit desired behaviors<br>**Always review outputs**  
+> Agent responses are stochastic<br>You are responsible for ensuring agents exhibit desired behaviors<br>**Always review outputs**  
 
 
 </details></div>
