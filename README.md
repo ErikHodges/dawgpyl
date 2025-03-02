@@ -40,8 +40,9 @@
 </span>
 </div>
 
-<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
+
+<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
 > [!CAUTION]
 > `Agent` responses are stochastic  
@@ -49,6 +50,8 @@
 > **Always review outputs**  
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
+
+
 
 <div id="overview" >
 <details><summary><h2 style="display:inline-block;border-color:rgba(0,0,0,0)">
@@ -139,6 +142,7 @@ $ -->
 - `ModelConfig`
   - `configs/models.py`
 <br>
+
 ---
 
 <!-- - `Persona`
@@ -157,11 +161,13 @@ $ -->
   - Task
   - ~~Team~~ **?????**
 <br>
+
 ---
 
 - `Tasks`
 - `TaskConfig`
 <br>
+
 ---
 
 - `Teams` 
@@ -190,12 +196,15 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 </span>
 
 ---
+
 ### Architecture
 
 <img src="docs/assets/architecture.svg" width="1024"/>
 <br>
 
 </details></div>
+
+
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
@@ -269,25 +278,12 @@ note: IF it is possible that a Team's members can be a collection of teams, then
 
 ---
 
-> [!TIP]
-> `Teams` of `Agents` can be configured to follow standardized workflows.
-
-
 </details></div>
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
-
-
-
-
-<div id="documentation_offline">
-<details><summary><h2 style="display:inline-block;border-color:rgba(0,0,0,0)">Documentation (offline)</h2></summary>
-
-
-
-
-</details></div>
+> [!TIP]
+> `Teams` of `Agents` can be configured to follow standardized workflows.
 
 <hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
