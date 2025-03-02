@@ -1,7 +1,7 @@
 <div id="title">
 <h1 style="border-color:#219db5;width:100%;border-width:2px;text-align:center;" align="center"> 
-<code style="color:#219db5;">dawgpyl</code><br>
-<span style="font-size:75%">Directing Agents with Graphs Python Library</span>
+<code style="color:#219db5;">dawgpyl</code><br>  
+<span style="font-size:50%">Directing Agents with Graphs Python Library </span>
 </h1>
 
 <span style="font-size:150%;text-align:center;">
