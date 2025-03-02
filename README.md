@@ -27,7 +27,6 @@
 
 </span></div>
 
-<hr style="border-color:#219db5;width:100%;border-width:2px;text-align:left;margin-left:0">
 
 <div id="navigation">
 <span style="font-size:120%;font-weight:bold;text-align:center;" align="center">
